@@ -1,0 +1,616 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Linha do Tempo das Telas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Layout: navegação simples no topo; seis páginas por hash. Linha do tempo com mapa do cérebro à esquerda e conteúdo da fase à direita. */
+:root{
+  --bg:#F8F7FD; --surface:#FFFFFF; --ink:#0F1A4A; --muted:#4B5478; --line:#DAD6F0;
+  --accent:#5B2FC9; --accent-soft:#ECE6FC; --accent-ink:#FFFFFF;
+  --good:#2447B8; --good-soft:#E3E9FB; --risk:#B8264F; --risk-soft:#FBE3EA;
+  --mark:#D9CCFB; --mark-ink:#0F1A4A;
+  --lobe:#E3E0F3; --lobe-hot:#C9BBF3; --deep:#F1EFFA;
+  --navy:#0F1A4A; --on-navy:#FFFFFF; --on-navy-soft:#C9CEF2; --glow:#A98BFF;
+  --f-head:"Lexend",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,sans-serif;
+  --f-mono:"Source Sans 3",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0A1030; --surface:#121A47; --ink:#ECEBFA; --muted:#AAB0D8; --line:#272F66;
+  --accent:#B49CFF; --accent-soft:#231D54; --accent-ink:#0A1030;
+  --good:#8FB0FF; --good-soft:#18265E; --risk:#FF93AB; --risk-soft:#43183A;
+  --mark:#4A3A9C; --mark-ink:#FFFFFF;
+  --lobe:#232B5E; --lobe-hot:#4B3B9B; --deep:#10173F;
+  --navy:#18227A; --on-navy:#FFFFFF; --on-navy-soft:#C9CEF2; --glow:#B49CFF; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A1030; --surface:#121A47; --ink:#ECEBFA; --muted:#AAB0D8; --line:#272F66;
+  --accent:#B49CFF; --accent-soft:#231D54; --accent-ink:#0A1030;
+  --good:#8FB0FF; --good-soft:#18265E; --risk:#FF93AB; --risk-soft:#43183A;
+  --mark:#4A3A9C; --mark-ink:#FFFFFF;
+  --lobe:#232B5E; --lobe-hot:#4B3B9B; --deep:#10173F;
+  --navy:#18227A; --on-navy:#FFFFFF; --on-navy-soft:#C9CEF2; --glow:#B49CFF; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--f-body);margin:0;
+  padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1120px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-head);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:700}
+h2{font-size:1.4rem;font-weight:600}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:0}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+mark{background:linear-gradient(transparent 58%,var(--mark) 58%);color:inherit;padding:0 .12em}
+.eyebrow{font:600 .95rem/1.3 var(--f-body);color:var(--accent)}
+
+.top{display:flex;gap:10px 22px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:34px;padding-bottom:12px;border-bottom:2px solid var(--ink)}
+.brand{font:700 1.1rem/1 var(--f-head);color:var(--ink);text-decoration:none;white-space:nowrap}
+.nav{display:flex;gap:2px 6px;flex-wrap:wrap}
+.nav a{padding:6px 8px;color:var(--muted);text-decoration:none;font-weight:600;font-size:.98rem;white-space:nowrap}
+.nav a:hover{color:var(--ink)}
+.nav a[aria-current="page"]{color:var(--ink);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:7px;text-decoration-color:var(--accent)}
+.theme{all:unset;cursor:pointer;font-size:.92rem;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.theme:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+.pintro{display:grid;gap:12px;margin-bottom:30px}
+.pintro .lead{color:var(--muted);max-width:62ch;font-size:1.1rem}
+.hero{display:grid;gap:16px;margin-bottom:38px}
+.hero .lead{color:var(--muted);max-width:56ch;font-size:1.2rem}
+.actions{display:flex;gap:16px 22px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.btn{display:inline-block;text-decoration:none;font-weight:600;padding:12px 18px;border-radius:4px}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.alt{color:var(--ink);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px;padding-inline:0}
+.sect{margin-top:46px;display:grid;gap:16px}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:var(--surface);border-radius:6px;padding:20px;overflow-wrap:anywhere}
+.card h3{margin-bottom:6px}
+.card p{color:var(--muted)}
+.card p+p{margin-top:8px}
+.card ul{margin:8px 0 0;padding-left:1.2em;color:var(--muted)}
+.card li+li{margin-top:6px}
+.callout{background:var(--accent-soft);border-radius:6px;padding:22px 24px;display:grid;gap:10px}
+.callout p{max-width:70ch}
+.prose{max-width:66ch;display:grid;gap:12px}
+.prose p{color:var(--muted)}
+.source{font-weight:600;display:inline-block;margin-top:4px}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{margin-top:6px}
+summary{cursor:pointer;font-weight:600}
+details p{margin-top:8px;max-width:66ch}
+ol.steps{margin:6px 0;padding-left:1.3em;display:grid;gap:8px;max-width:66ch}
+
+.tl{display:grid;grid-template-columns:6fr 6fr 7fr;gap:10px;margin-bottom:34px}
+.tl button{all:unset;cursor:pointer;display:grid;gap:3px;padding:12px 4px 4px;border-top:5px solid var(--line);min-width:0}
+.tl button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.tl .ages{font:700 clamp(1.6rem,4.2vw,2.6rem)/1.1 var(--f-head)}
+.tl .ages small{display:none}
+.tl .pname{font-weight:600}
+.tl .rule{font-size:.92rem;line-height:1.35;color:var(--muted)}
+.tl button[aria-selected="true"]{border-top-color:var(--accent)}
+.tl button[aria-selected="true"] .ages{background:linear-gradient(transparent 62%,var(--mark) 62%);width:fit-content}
+
+.body{display:grid;grid-template-columns:minmax(0,410px) minmax(0,1fr);gap:40px;align-items:start}
+.mapcol{position:sticky;top:16px;display:grid;gap:14px}
+svg{display:block;width:100%;height:auto}
+.out{fill:none;stroke:var(--ink);stroke-width:1.6;opacity:.5}
+.cb,.stem{fill:var(--lobe);stroke:var(--ink);stroke-width:1.2;opacity:.85}
+.neutral{fill:var(--lobe);opacity:.55}
+.reg polygon{fill:var(--lobe);stroke:var(--bg);stroke-width:3;transition:fill .15s}
+.reg:hover polygon,.reg:focus-visible polygon{fill:var(--lobe-hot)}
+.reg.hot polygon{fill:var(--lobe-hot)}
+.reg.sel polygon{fill:var(--accent)}
+.reg:focus-visible{outline:none}
+.lbl{font:600 10px var(--f-body);fill:var(--muted);pointer-events:none;text-anchor:middle}
+.reg.sel .lbl{fill:var(--accent-ink)}
+.deep circle,.deep ellipse{fill:var(--deep);stroke:var(--ink);stroke-width:1.4;stroke-dasharray:3 2;transition:fill .15s}
+.deep:hover circle,.deep:hover ellipse,.deep:focus-visible circle,.deep:focus-visible ellipse{fill:var(--lobe-hot)}
+.deep.hot circle,.deep.hot ellipse{fill:var(--lobe-hot)}
+.deep.sel circle,.deep.sel ellipse{fill:var(--accent);stroke:var(--accent)}
+.deep:focus-visible{outline:none}
+.wmw{fill:none;stroke:var(--ink);stroke-width:4.5;stroke-linecap:round;opacity:.5}
+.wm:hover .wmw,.wm.hot .wmw{stroke:var(--accent);opacity:.9}
+.wm.sel .wmw{stroke:var(--accent);opacity:1;stroke-width:6}
+.wm:focus-visible{outline:none}
+.hit{fill:none;stroke:transparent;stroke-width:18}
+.note{font-size:.88rem;color:var(--muted);margin-top:8px}
+.mapcard{background:var(--surface);border-radius:6px;padding:16px}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{all:unset;cursor:pointer;font:600 .9rem/1 var(--f-body);padding:8px 10px;border:1px solid var(--line);border-radius:4px}
+.chips button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chips button.hot{border-color:var(--accent)}
+.chips button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.rpanel{padding:4px 2px}
+.rpanel h3{font-size:1.2rem;margin-bottom:2px}
+.where{font-size:.92rem;color:var(--muted);margin-bottom:10px}
+.rpanel .does{margin-bottom:12px}
+.rel{font-weight:600;color:var(--accent);margin-bottom:8px}
+
+.tag{font-weight:700;margin-right:4px}
+.tag::after{content:":"}
+.t-m{color:var(--ink)}
+.t-h{color:var(--accent)}
+.t-g{color:var(--muted);font-style:italic}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.88rem;color:var(--muted)}
+ul.facts{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+
+.phase{display:grid;gap:32px;min-width:0}
+.phead{display:grid;gap:10px}
+.sbp{background:var(--accent-soft);padding:10px 14px;border-radius:4px;width:fit-content;max-width:100%}
+.sbp b{margin-right:6px}
+.brainp{display:grid;gap:8px;max-width:66ch}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.blk{display:grid;gap:12px;min-width:0;align-content:start}
+.blk h2{font-size:1.15rem;color:var(--c,var(--ink))}
+.good{--c:var(--good)} .risk{--c:var(--risk)}
+.blk ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.blk li{padding-bottom:12px;border-bottom:1px solid var(--line)}
+.blk li:last-child{border-bottom:0;padding-bottom:0}
+.studies{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted)}
+.studies span::before{content:"· "}
+
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:20px}
+.flow>div{display:grid;gap:4px;align-content:start;min-width:0}
+.flow .k{font:700 1.5rem/1 var(--f-head);color:var(--accent)}
+.flow h3{font-size:1rem}
+.flow p{color:var(--muted);font-size:.95rem}
+.loopnote{color:var(--muted)}
+.debate{display:grid;grid-template-columns:repeat(3,1fr);gap:26px 28px}
+.debate>div{display:grid;gap:6px;align-content:start}
+.debate p{color:var(--muted)}
+.takeaway{background:var(--mark);color:var(--mark-ink);padding:20px 24px;border-radius:4px;font:600 1.25rem/1.4 var(--f-head);text-wrap:balance}
+.src{display:grid;grid-template-columns:1fr 1fr;gap:12px 28px}
+.src span{color:var(--muted);font-size:.9rem}
+.refs{margin:8px 0 0;padding-left:1.2em;display:grid;gap:10px}
+footer{margin-top:48px;padding-top:16px;border-top:2px solid var(--ink);color:var(--muted);font-size:.92rem}
+
+@media (max-width:900px){
+  .body{grid-template-columns:minmax(0,1fr)}
+  .mapcol{position:static}
+  .flow{grid-template-columns:1fr}
+  .debate,.src,.split,.grid,.grid.two{grid-template-columns:1fr}
+  .nav{order:3;width:100%;flex-wrap:nowrap;overflow-x:auto}
+}
+@media (max-width:520px){
+  .tl{gap:6px}
+  .tl .rule{display:none}
+  .tl .ages small{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== Novo visual: roxo + azul-marinho ===== */
+.top{background:var(--navy);border:0;border-radius:16px;padding:14px 20px;margin-bottom:36px}
+.brand{color:var(--on-navy);font-size:1.15rem}
+.brand::before{content:"";display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--glow);margin-right:10px}
+.nav a{color:var(--on-navy-soft);border-radius:8px}
+.nav a:hover{color:var(--on-navy)}
+.nav a[aria-current="page"]{color:var(--on-navy);text-decoration-color:var(--glow)}
+.theme{color:var(--on-navy-soft)}
+.top :focus-visible{outline-color:var(--glow)}
+
+.hero{background:var(--navy);color:var(--on-navy);border-radius:22px;padding:clamp(28px,6vw,60px);gap:18px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-90px;top:-90px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#7C4DFF,transparent 70%);opacity:.55;pointer-events:none}
+.hero>*{position:relative;z-index:1}
+.hero h1{color:var(--on-navy)}
+.hero .eyebrow{color:var(--glow)}
+.hero .lead{color:var(--on-navy-soft)}
+.hero mark{background:linear-gradient(transparent 58%,#6D3FE0 58%);color:var(--on-navy)}
+.hero .btn.primary{background:#fff;color:var(--navy)}
+.hero .btn.alt{color:var(--on-navy)}
+.hero :focus-visible{outline-color:var(--glow)}
+
+.pintro{padding-left:18px;border-left:6px solid var(--accent)}
+
+.btn{border-radius:999px;padding:12px 22px}
+.card{border:1px solid var(--line);border-radius:14px;padding:22px}
+.callout{border-left:6px solid var(--accent);border-radius:14px}
+.mapcard{border:1px solid var(--line);border-radius:14px}
+.chips button{border-radius:999px;padding:8px 14px}
+.sbp{border-radius:999px;padding:8px 16px}
+.takeaway{background:var(--navy);color:var(--on-navy);border-left:8px solid var(--glow);border-radius:14px}
+.tl button{border-top-width:6px;border-radius:2px}
+.tl button[aria-selected="true"] .ages{background:linear-gradient(transparent 62%,var(--mark) 62%)}
+details{border-top-color:var(--line)}
+footer{border-top:2px solid var(--accent)}
+@media (max-width:900px){.top{padding:12px 14px}.hero::after{width:200px;height:200px}}
+</style>
+
+
+<div class="wrap">
+<div class="top">
+  <a class="brand" href="#inicio">Telas e Infância</a>
+  <nav class="nav" aria-label="Navegação principal">
+    <a href="#inicio" data-nav="inicio">Início</a>
+    <a href="#linha-do-tempo" data-nav="linha-do-tempo">Por idade e cérebro</a>
+    <a href="#efeitos" data-nav="efeitos">Efeitos</a>
+    <a href="#tdah" data-nav="tdah">TDAH</a>
+    <a href="#uso-consciente" data-nav="uso-consciente">Uso consciente</a>
+    <a href="#fontes" data-nav="fontes">Fontes</a>
+  </nav>
+  <button class="theme" id="theme" type="button">Alternar tema</button>
+</div>
+
+<!-- INÍCIO -->
+<section id="inicio" data-page hidden aria-labelledby="t-inicio">
+  <div class="hero">
+    <span class="eyebrow">Guia para pais e responsáveis, do Projeto TIC</span>
+    <h1 id="t-inicio">Telas em <mark>cada fase</mark> da infância</h1>
+    <p class="lead">O que as pesquisas dizem sobre sono, atenção e desenvolvimento? Veja o que foi estudado em cada idade, o que acontece no cérebro e como a tecnologia pode fazer parte da rotina.</p>
+    <div class="actions"><a class="btn primary" href="#linha-do-tempo">Explorar por idade</a><a class="btn alt" href="#efeitos">Ver efeitos estudados</a></div>
+  </div>
+  <div class="sect"><h2>O que observar em casa</h2>
+    <div class="grid">
+      <article class="card"><h3>Sono</h3><p>Em que horário a tela entra na rotina? Observe se o tempo de vídeo ou de jogo acaba tomando o espaço da preparação para dormir.</p></article>
+      <article class="card"><h3>Atenção e brincadeira</h3><p>Quando a TV fica ligada ao fundo, vale perceber como fica a conversa, a leitura ou a brincadeira.</p></article>
+      <article class="card"><h3>Uso acompanhado</h3><p>Uma videochamada com a família ou uma atividade guiada pode abrir espaço para conversar, aprender e praticar habilidades.</p></article>
+    </div>
+  </div>
+  <div class="sect"><div class="callout"><span class="eyebrow">Atenção e desenvolvimento</span><h2>Telas causam TDAH?</h2><p>O estudo citado no banner acompanhou adolescentes e encontrou uma associação entre uso frequente de mídias digitais e relatos posteriores de sintomas. A aba de TDAH explica o que isso significa e o que vale observar em casa e na escola.</p><a class="source" href="#tdah">Entender o estudo sobre TDAH</a></div></div>
+  <div class="sect prose"><h2>O contexto muda a experiência</h2><p>Uma videochamada acompanhada e uma TV ligada durante toda a brincadeira ocupam a rotina de jeitos diferentes. Além do tempo total, vale olhar para o conteúdo, para o horário e para o que a criança está fazendo antes e depois.</p><p>Comece por um momento do dia. Nas refeições, por exemplo, guarde os aparelhos e aproveite para conversar. Se a transição for difícil, combinem com antecedência quando o vídeo termina e o que vem a seguir.</p><a class="source" href="#uso-consciente">Abrir o guia de uso consciente</a></div>
+  <div class="sect"><div class="callout"><h3>Sobre o projeto</h3><p>Este portal nasceu de uma pesquisa bibliográfica de abordagem qualitativa. O trabalho reúne artigos científicos e documentos de orientação para facilitar o acesso das famílias às informações sobre telas, mídias sociais e desenvolvimento.</p><a class="source" href="#fontes">Conhecer as referências</a></div></div>
+</section>
+
+<!-- LINHA DO TEMPO -->
+<section id="linha-do-tempo" data-page hidden aria-labelledby="t-linha">
+  <div class="pintro"><span class="eyebrow">Linha do tempo</span><h1 id="t-linha">Dos <mark>primeiros anos</mark> à adolescência</h1><p class="lead">Escolha uma faixa para consultar os achados e as orientações que se aplicam àquela etapa. O mapa mostra quais áreas do cérebro estão em foco, e cada informação indica se vem de estudo, de hipótese ou de neurociência básica.</p></div>
+  <div class="tl" role="tablist" aria-label="Fases do desenvolvimento" id="tl"></div>
+  <div class="body">
+    <aside class="mapcol">
+      <div class="mapcard">
+        <svg viewBox="0 0 420 300" role="img" aria-label="Esquema lateral do cérebro com regiões clicáveis">
+          <defs><clipPath id="clip"><path d="M70,170 C50,120 75,70 130,48 C190,25 270,25 330,55 C385,82 395,140 370,175 C355,195 335,200 315,198 L290,205 C270,225 240,232 205,228 C170,224 150,215 125,205 C100,198 80,190 70,170 Z"/></clipPath></defs>
+          <ellipse class="cb" cx="322" cy="224" rx="52" ry="27"/>
+          <path class="stem" d="M258,214 L272,288 L300,288 L298,226 Z"/>
+          <g clip-path="url(#clip)">
+            <polygon class="neutral" points="145,0 215,0 203,95 190,140 150,182 140,100"/>
+            <g class="reg" data-r="pfc" tabindex="0" role="button" aria-label="Córtex pré-frontal"><polygon points="0,0 145,0 140,100 150,182 150,300 0,300"/><text class="lbl" x="98" y="108"><tspan x="98">PRÉ-</tspan><tspan x="98" dy="12">FRONTAL</tspan></text></g>
+            <g class="reg" data-r="parietal" tabindex="0" role="button" aria-label="Lobo parietal"><polygon points="215,0 312,0 312,162 250,148 190,140 203,95"/><text class="lbl" x="262" y="78">PARIETAL</text></g>
+            <g class="reg" data-r="occipital" tabindex="0" role="button" aria-label="Lobo occipital"><polygon points="312,0 420,0 420,300 312,300"/><text class="lbl" x="352" y="118">OCCIPITAL</text></g>
+            <g class="reg" data-r="temporal" tabindex="0" role="button" aria-label="Lobo temporal"><polygon points="150,182 190,140 250,148 312,162 312,300 150,300"/><text class="lbl" x="232" y="212">TEMPORAL</text></g>
+          </g>
+          <path class="out" d="M70,170 C50,120 75,70 130,48 C190,25 270,25 330,55 C385,82 395,140 370,175 C355,195 335,200 315,198 L290,205 C270,225 240,232 205,228 C170,224 150,215 125,205 C100,198 80,190 70,170 Z"/>
+          <g class="wm" data-r="white" tabindex="0" role="button" aria-label="Substância branca"><path class="hit" d="M104,128 C140,72 228,70 246,184"/><path class="wmw" d="M104,128 C140,72 228,70 246,184"/></g>
+          <g class="deep" data-r="striatum" tabindex="0" role="button" aria-label="Estriado e núcleo accumbens"><circle cx="205" cy="118" r="14"/></g>
+          <g class="deep" data-r="amygdala" tabindex="0" role="button" aria-label="Amígdala"><circle cx="176" cy="172" r="9"/></g>
+          <g class="deep" data-r="hippocampus" tabindex="0" role="button" aria-label="Hipocampo"><ellipse cx="238" cy="182" rx="22" ry="7" transform="rotate(-12 238 182)"/></g>
+          <g class="deep" data-r="pineal" tabindex="0" role="button" aria-label="Relógio biológico"><circle cx="262" cy="140" r="7"/></g>
+        </svg>
+        <p class="note">Desenho simplificado do cérebro visto de lado, com a frente à esquerda. Os círculos tracejados ficam no fundo do cérebro. Toque numa região ou escolha pelos botões.</p>
+      </div>
+      <div class="chips" id="chips"></div>
+      <div class="rpanel" id="rpanel" aria-live="polite"></div>
+      <div class="legend">
+        <span><span class="tag t-m">Estudo</span>associação medida</span>
+        <span><span class="tag t-h">Hipótese</span>mecanismo proposto</span>
+        <span><span class="tag t-g">Geral</span>neurociência básica</span>
+      </div>
+    </aside>
+    <main class="phase" id="phase"></main>
+  </div>
+
+  <div class="sect">
+    <h2>O circuito da recompensa</h2>
+    <div class="flow">
+      <div><span class="k">1 · Gatilho</span><h3>Estímulo</h3><p>Notificação, curtida, rolagem infinita e vídeo que começa sozinho.</p></div>
+      <div><span class="k">2 · Dopamina</span><h3>Vontade de repetir</h3><p>O sistema de recompensa libera dopamina, que motiva a buscar mais, e não só dá prazer.</p></div>
+      <div><span class="k">3 · Adaptação</span><h3>Tolerância</h3><p>O cérebro se ajusta e precisa de mais estímulo para sentir o mesmo.</p></div>
+      <div><span class="k">4 · Freio</span><h3>Pré-frontal imaturo</h3><p>A região do autocontrole ainda amadurece, então parar fica mais difícil.</p></div>
+      <div><span class="k">5 · Efeito</span><h3>Custo no dia a dia</h3><p>Sono perdido, irritabilidade e atenção pior, o que aumenta a vontade de buscar alívio na tela.</p></div>
+    </div>
+    <p class="loopnote"><span class="tag t-h">Hipótese</span>Ideia de Anna Lembke (<i>Nação Dopamina</i>, 2022) sobre tolerância e abstinência. Aplicada às telas e a crianças, é uma explicação plausível, e não um resultado comprovado. O estudo ABCD não achou diferenças cerebrais ligadas ao questionário de vício em redes sociais.</p>
+  </div>
+
+  <div class="sect">
+    <div class="callout"><h3>Experimente uma situação do dia a dia</h3>
+      <details><summary>A TV fica ligada enquanto a criança brinca</summary><p>Em uma revisão de estudos sobre a primeira infância, TV ligada ao fundo esteve associada a resultados cognitivos menos favoráveis. Experimente desligá-la durante a brincadeira e observe se fica mais fácil conversar e brincar juntos.</p><a class="source" href="#ref-contexto">Fonte · Mallawaarachchi et al.</a></details>
+      <details><summary>O vídeo continua perto da hora de dormir</summary><p>O guia federal orienta deixar um intervalo entre desligar as telas e a hora de dormir. Em família, escolham um momento para encerrar os vídeos e uma atividade para depois, como ler uma história.</p><a class="source" href="#ref-guia">Fonte · Guia federal sobre telas</a></details>
+    </div>
+  </div>
+</section>
+
+<!-- EFEITOS -->
+<section id="efeitos" data-page hidden aria-labelledby="t-efeitos">
+  <div class="pintro"><span class="eyebrow">O que as pesquisas observaram</span><h1 id="t-efeitos">Efeitos <mark>estudados</mark></h1><p class="lead">Os estudos indicam associações observadas em grupos. Duração, horário, conteúdo e acompanhamento adulto ajudam a entender o contexto. Para afirmar que uma exposição causou um transtorno, é preciso evidência adicional.</p></div>
+  <div class="grid two">
+    <article class="card"><h3>Sono na primeira infância</h3><p>Uma revisão com crianças menores de 5 anos encontrou associações entre maior exposição a telas, sobretudo à noite, e resultados menos favoráveis de sono, como dormir menos. Os autores apontaram limitações na qualidade da evidência.</p><a class="source" href="#ref-sono">Janssen et al. (2020)</a></article>
+    <article class="card"><h3>Desenvolvimento e aprendizagem</h3><p>Mais tempo de tela aos 2 e 3 anos esteve associado a pontuações menores em avaliações posteriores de desenvolvimento. Em outra revisão, o uso acompanhado apareceu associado a resultados cognitivos mais favoráveis na primeira infância.</p><a class="source" href="#ref-madigan">Madigan et al. (2019)</a> · <a class="source" href="#ref-contexto">Mallawaarachchi et al. (2024)</a></article>
+    <article class="card"><h3>Atenção, hiperatividade e TDAH</h3><p>Entre adolescentes de 15 e 16 anos no início do estudo, o uso mais frequente de mídias digitais esteve associado ao relato posterior de sintomas de desatenção ou hiperatividade. O estudo mediu sintomas. O diagnóstico de TDAH exige avaliação clínica.</p><a class="source" href="#ref-ra">Ra et al. (2018)</a></article>
+    <article class="card"><h3>Redes sociais e saúde mental</h3><p>Em adolescentes de 12 a 15 anos no início do estudo, mais tempo em redes sociais esteve associado a mais dificuldades emocionais do tipo internalizante, categoria que inclui sintomas de ansiedade e depressão. A pesquisa analisou relatos de sintomas.</p><a class="source" href="#ref-riehm">Riehm et al. (2019)</a></article>
+  </div>
+
+  <div class="sect">
+    <span class="eyebrow">Para não exagerar</span>
+    <h2>O que a ciência ainda discute</h2>
+    <div class="debate">
+      <div><h3>Associação não é causa</h3><p>Os autores de Riehm et al. (2019) escrevem que não dá para concluir que a rede social causa problemas de saúde mental. Quase todos os estudos citados são observacionais.</p></div>
+      <div><h3>Os efeitos médios são pequenos</h3><p>Uma meta-análise de 226 estudos com mais de 275 mil pessoas achou efeito de 0,01 na escala em que 0,2 é pequeno. Orben e Przybylski estimaram que a tecnologia explica cerca de 0,4% do bem-estar dos adolescentes. Críticos como Twenge respondem que médias escondem jovens mais vulneráveis.</p></div>
+      <div><h3>O sentido pode ser o inverso</h3><p>Um estudo canadense com adolescentes achou que sintomas de depressão previam mais uso de redes sociais em meninas, e não o contrário. No ABCD, córtex mais fino pode ser causa, consequência ou parte do amadurecimento normal.</p></div>
+      <div><h3>Tipo de uso importa</h3><p>Uso ativo (conversar, criar) tende a ser melhor que uso passivo (rolar sem parar), embora haja estudos com resultado oposto. Sentir-se no controle do próprio uso previu melhor bem-estar do que o tempo gasto.</p></div>
+      <div><h3>Nem todo jovem é igual</h3><p>Idade, saúde mental prévia, sono e vida familiar mudam o efeito. Intimidação e sono ruim pesam mais no bem-estar do que o tempo de tela, segundo Orben e Przybylski.</p></div>
+      <div><h3>Fase de 6 a 11 anos</h3><p>É a fase com menos estudos próprios. O projeto se apoia em documentos como o da SBP, e vale dizer isso na apresentação.</p></div>
+    </div>
+    <p class="takeaway">As telas não estragam o cérebro de toda criança. O risco aparece quando o uso é precoce, longo, à noite e sem mediação da família.</p>
+  </div>
+
+  <div class="sect">
+    <div class="callout"><h3>Um mesmo sinal pode ter várias explicações</h3><p>Uma criança que dormiu pouco pode ter mais dificuldade para se concentrar durante o dia. Se a dificuldade se repete, observe em quais situações ela aparece e como interfere na rotina. A <a href="#tdah">aba de TDAH</a> traz exemplos do que pode ajudar numa conversa com a escola e com a equipe de saúde.</p></div>
+    <div class="callout"><h3>Quando buscar ajuda</h3><p>Se dificuldades de sono, atenção ou mudanças de comportamento persistirem e atrapalharem o dia a dia, converse com a equipe da Unidade Básica de Saúde ou com o pediatra.</p></div>
+  </div>
+</section>
+
+<!-- TDAH -->
+<section id="tdah" data-page hidden aria-labelledby="t-tdah">
+  <div class="pintro"><span class="eyebrow">Atenção e desenvolvimento</span><h1 id="t-tdah">TDAH e <mark>telas</mark></h1><p class="lead">O TDAH é um transtorno do neurodesenvolvimento. Pode envolver dificuldades persistentes de atenção, hiperatividade ou impulsividade que afetam atividades do dia a dia. A genética tem um papel importante no risco de TDAH.</p><a class="source" href="#ref-cdc">Fonte · CDC</a></div>
+  <div class="callout"><h2>O que a pesquisa encontrou</h2><p>Ra e colegas acompanharam adolescentes que tinham 15 ou 16 anos no início do estudo. Ao longo de dois anos, quem relatava usar mídias digitais com mais frequência também teve maior probabilidade de relatar sintomas de desatenção ou hiperatividade.</p><p><strong>O estudo observou uma associação.</strong> Ele não demonstrou que telas causam TDAH, não avaliou crianças de 0 a 5 anos e analisou sintomas relatados, sem estabelecer novos diagnósticos clínicos.</p><a class="source" href="#ref-ra">Consultar o artigo citado no banner</a></div>
+  <div class="sect"><div class="grid two">
+    <article class="card"><h3>O que observar na rotina</h3><p>Exemplos concretos ajudam a explicar a dificuldade. Se algo chama sua atenção, observe:</p><ul><li>Há quanto tempo acontece e com que frequência.</li><li>Se aparece em mais de um ambiente, como em casa e na escola.</li><li>Se interfere na aprendizagem, no convívio ou nas tarefas.</li><li>Como andam o sono e os horários de uso das telas.</li></ul></article>
+    <article class="card"><h3>Como se investiga o TDAH</h3><p>A avaliação clínica reúne informações sobre o desenvolvimento e o comportamento em diferentes situações. A equipe de saúde pode conversar com a família e considerar relatos da escola.</p><p>Dificuldades de sono, ansiedade e dificuldades de aprendizagem também podem afetar a atenção. Se os sinais persistirem e atrapalharem a rotina, leve exemplos à UBS ou ao pediatra.</p><a class="source" href="#ref-cdc">Fonte · Avaliação do TDAH</a></article>
+  </div></div>
+  <div class="sect"><div class="callout"><h3>Situações para conversar em família</h3>
+    <details><summary>A dificuldade aparece principalmente depois de dormir tarde</summary><p>Observe se esse padrão se repete. Experimente combinar um horário para guardar o aparelho antes de dormir e anote como ficam o sono e a concentração nos dias seguintes. Essa observação pode ajudar a descrever a rotina em uma consulta.</p></details>
+    <details><summary>A escola e a família percebem dificuldades há algum tempo</summary><p>Reúnam exemplos de cada ambiente, com as atividades em que a dificuldade aparece e como ela interfere no dia. Leve essas observações a um profissional de saúde para orientar a avaliação.</p></details>
+  </div></div>
+</section>
+
+<!-- USO CONSCIENTE -->
+<section id="uso-consciente" data-page hidden aria-labelledby="t-uso">
+  <div class="pintro"><span class="eyebrow">Guia para pais e responsáveis</span><h1 id="t-uso">Uso <mark>consciente</mark></h1><p class="lead">As telas podem ajudar crianças e adolescentes a aprender, criar e manter contato com outras pessoas. Para escolher como usar, comece pelo objetivo da atividade e observe como ela se encaixa na rotina da família.</p></div>
+  <div class="callout"><span class="eyebrow">Aprender um novo idioma</span><h2>Do vídeo para a conversa</h2>
+    <p>Se a criança já usa telas, escolham juntos uma música ou um vídeo curto em inglês sobre algo de que ela gosta. A tela permite ouvir a pronúncia, repetir um trecho e ligar sons a imagens. Depois, usem as palavras em uma brincadeira longe do aparelho.</p>
+    <ol class="steps">
+      <li><strong>Antes.</strong> Escolham três palavras, como <em>apple</em>, <em>banana</em> e <em>orange</em>.</li>
+      <li><strong>Durante.</strong> Pausem o vídeo e repitam as palavras juntos. A criança pode apontar a imagem que corresponde a cada som.</li>
+      <li><strong>Depois.</strong> Na cozinha ou numa brincadeira de feira, peçam as frutas em inglês. Em outro dia, retomem as palavras em uma frase curta.</li>
+    </ol>
+    <p>Adapte a atividade à idade. Com os menores de 2 anos, a brincadeira pode acontecer com músicas cantadas em família e objetos da casa. Consulte a <a href="#linha-do-tempo">linha do tempo por idade</a> para ver as orientações de cada fase.</p>
+  </div>
+  <div class="sect"><h2>Outros jeitos de aproveitar as telas</h2>
+    <div class="grid">
+      <article class="card"><h3>Criar</h3><p>Fotografem as etapas de uma receita ou de um trabalho escolar. Depois, a criança pode escolher as imagens e contar a história com a própria voz.</p></article>
+      <article class="card"><h3>Manter contato</h3><p>Combine uma videochamada em família. A criança pode mostrar um desenho, contar algo que aconteceu na escola ou fazer uma pergunta para quem está longe.</p></article>
+      <article class="card"><h3>Investigar</h3><p>Pesquisem juntos uma pergunta que surgiu no cotidiano. Comparem duas fontes e peçam que a criança explique com as próprias palavras o que entendeu.</p></article>
+    </div>
+    <a class="source" href="#ref-contexto">Ler a revisão sobre conteúdo e uso acompanhado</a>
+  </div>
+  <div class="sect"><h2>Redes sociais na prática</h2>
+    <p class="prose" style="color:var(--muted)">Descobrir um assunto ou conversar com amigos pode fazer parte do uso das redes. Com adolescentes, vale combinar antes como cuidar da privacidade, lidar com o que aparece no feed e pedir ajuda quando algo incomoda. Com crianças menores, os responsáveis podem escolher e acompanhar o conteúdo, respeitando a idade mínima da plataforma.</p>
+    <div class="grid two">
+      <article class="card"><h3>Combinados para começar</h3><ul>
+        <li>Definam juntos quando acessar e quando encerrar. Preservem horários de sono, estudo e convivência.</li>
+        <li>Revisem quem pode ver o perfil, enviar mensagens e marcar publicações. Evitem divulgar endereço, escola e localização em tempo real.</li>
+        <li>Conversem antes de publicar fotos de outras pessoas. Mostrem onde bloquear e denunciar uma conta ou publicação.</li></ul></article>
+      <article class="card"><h3>Como escolher o que consumir</h3><ul>
+        <li>Sigam contas que atendam aos interesses do adolescente e silenciem conteúdos que gerem desconforto ou pressão.</li>
+        <li>Antes de compartilhar uma informação, confiram autoria, data e fonte. Se houver uma oferta ou recomendação de produto, procurem a identificação de publicidade.</li>
+        <li>Desativem a reprodução automática, quando disponível, e reduzam notificações que atrapalhem o horário combinado.</li></ul></article>
+    </div>
+  </div>
+  <div class="sect"><div class="callout"><h3>O que fazer em situações comuns</h3>
+    <details><summary>O vídeo de estudo virou uma sequência de vídeos</summary><p>Separem o material antes de começar e combinem um ponto de parada. Ao terminar, retomem o objetivo com uma pergunta simples, como “qual palavra você quer usar hoje?”.</p></details>
+    <details><summary>Chegou uma mensagem de alguém desconhecido</summary><p>Conversem sobre o que aconteceu. Se a mensagem for indesejada, usem os recursos de bloqueio e denúncia. Se pedirem foto, localização ou segredo, procurem um adulto de confiança antes de responder.</p></details>
+    <details><summary>Um perfil compartilhou algo que deixou o adolescente mal</summary><p>Pergunte o que ele sentiu e escute antes de decidir o que fazer. Vocês podem silenciar a conta, ajustar o feed e combinar como procurar ajuda se isso voltar a acontecer.</p></details>
+    <a class="source" href="#ref-guia">Consultar o guia federal sobre crianças, adolescentes e telas</a>
+  </div></div>
+</section>
+
+<!-- FONTES -->
+<section id="fontes" data-page hidden aria-labelledby="t-fontes">
+  <div class="pintro"><span class="eyebrow">Pesquisa bibliográfica</span><h1 id="t-fontes">Fontes do <mark>portal</mark></h1><p class="lead">Os artigos citados no banner, os materiais complementares e as páginas consultadas para explicar o cérebro e os efeitos às famílias.</p></div>
+  <div class="grid two">
+    <article class="card"><h3>Referências do banner</h3><ol class="refs">
+      <li id="ref-madigan"><a href="https://pubmed.ncbi.nlm.nih.gov/30688984/" target="_blank" rel="noopener">Madigan et al. (2019) — Tempo de tela e avaliação do desenvolvimento infantil</a></li>
+      <li id="ref-ra"><a href="https://pubmed.ncbi.nlm.nih.gov/30027248/" target="_blank" rel="noopener">Ra et al. (2018) — Mídias digitais e sintomas de TDAH em adolescentes</a></li>
+      <li id="ref-riehm"><a href="https://pubmed.ncbi.nlm.nih.gov/31509167/" target="_blank" rel="noopener">Riehm et al. (2019) — Redes sociais e dificuldades emocionais e comportamentais em adolescentes</a></li>
+      <li>Sociedade Brasileira de Pediatria (2019) — Manual <em>#MenosTelas #MaisSaúde</em>. Consulte também o <a href="https://www.sbp.com.br/fileadmin/user_upload/sbp/2025/setembro/02/25007e-DC_-_Primeira_Inf__Sem_Telas__Mais_Saude__2025-2028_.pdf" target="_blank" rel="noopener">documento da SBP de 2025 sobre a primeira infância</a>.</li>
+    </ol></article>
+    <article class="card"><h3>Leituras complementares</h3><ol class="refs">
+      <li id="ref-guia"><a href="https://www.gov.br/secom/pt-br/assuntos/uso-de-telas-por-criancas-e-adolescentes/guia/capitulos/contextos-de-uso-de-telas-e-dispositivos-digitais-por-criancas-e-adolescentes" target="_blank" rel="noopener">Governo Federal — Crianças, adolescentes e telas</a> e o capítulo sobre <a href="https://www.gov.br/secom/pt-br/assuntos/uso-de-telas-por-criancas-e-adolescentes/guia/capitulos/bem-estar-digital/" target="_blank" rel="noopener">bem-estar digital</a>.</li>
+      <li id="ref-cdc"><a href="https://www.cdc.gov/adhd/about/" target="_blank" rel="noopener">CDC — O que é TDAH</a> e <a href="https://www.cdc.gov/adhd/diagnosis/" target="_blank" rel="noopener">como é feita a avaliação</a>.</li>
+      <li id="ref-sono"><a href="https://pubmed.ncbi.nlm.nih.gov/31778942/" target="_blank" rel="noopener">Janssen et al. (2020) — Revisão sobre telas, atividade física e sono em menores de 5 anos</a></li>
+      <li id="ref-contexto"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12527480/" target="_blank" rel="noopener">Mallawaarachchi et al. (2024) — Revisão sobre os contextos de uso de telas na primeira infância</a></li>
+    </ol></article>
+  </div>
+  <div class="sect"><h2>Fontes do mapa do cérebro e do debate</h2>
+    <div class="src">
+      <div><a href="https://neurosciencenews.com/screen-time-brain-changes-15161/" target="_blank" rel="noopener">Hutton et al. (2020), substância branca</a><br><span>lido via reportagem</span></div>
+      <div><a href="https://psychnews.psychiatryonline.org/doi/10.1176/appi.pn.2019.3a41" target="_blank" rel="noopener">Madigan et al. (2019), desenvolvimento</a><br><span>lido via reportagem</span></div>
+      <div><a href="https://www.consultant360.com/exclusives/new-study-explores-possible-adhdsocial-media-link-teens" target="_blank" rel="noopener">Ra et al. (2018), TDAH</a><br><span>lido via reportagem</span></div>
+      <div><a href="https://hub.jhu.edu/2019/09/11/social-media-teen-mental-health/" target="_blank" rel="noopener">Riehm et al. (2019), saúde mental</a><br><span>lido via comunicado da universidade</span></div>
+      <div><a href="https://www.psypost.org/more-time-spent-on-social-media-is-linked-to-a-thinner-cerebral-cortex-in-young-adolescents/" target="_blank" rel="noopener">Estudo ABCD, redes sociais e córtex</a><br><span>lido via reportagem</span></div>
+      <div><a href="https://sbp.com.br/imprensa/detalhe/news/sociedade-brasileira-de-pediatria-atualiza-orientacoes-para-criancas-e-adolescentes-na-era-digital" target="_blank" rel="noopener">SBP, atualização de 2024</a><br><span>lido</span></div>
+      <div><a href="https://www.sbp.com.br/sbp-alerta-sobre-os-efeitos-do-uso-de-telas-na-visao-das-criancas/" target="_blank" rel="noopener">SBP (2023), telas e visão</a><br><span>lido</span></div>
+      <div><a href="https://www.news-medical.net/news/20240621/Screen-time-significantly-associated-with-myopia-in-children-research-shows.aspx" target="_blank" rel="noopener">Meta-análise de miopia (2024)</a><br><span>lido via reportagem</span></div>
+      <div><a href="https://www.npr.org/2022/03/31/1090009509/addiction-how-to-break-the-cycle-and-find-balance" target="_blank" rel="noopener">Lembke, Nação Dopamina</a><br><span>lido via entrevista na NPR</span></div>
+      <div><a href="https://www.scientificamerican.com/article/social-media-has-not-destroyed-a-generation/" target="_blank" rel="noopener">Scientific American, debate sobre efeitos</a><br><span>lido</span></div>
+      <div>SBP (2019), AAP (2016), Christakis (2004), McBee (2021), Nikkelen (2014), Haidt (2024)<br><span>citados no documento do projeto, não abertos nesta pesquisa; confira antes de citar números</span></div>
+      <div>Itens marcados como “Geral”<br><span>vêm de neurociência básica e não de um artigo aberto aqui</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>Projeto de Thomas Lucas Luna Diniz · Orientação de Eugenio Pereira da Silva · Escola SESI Professora Silvana Machado dos Santos</footer>
+</div>
+
+<script>
+const TAGS={m:['Estudo','t-m'],h:['Hipótese','t-h'],g:['Geral','t-g']};
+const tag=t=>`<span class="tag ${TAGS[t][1]}">${TAGS[t][0]}</span>`;
+const li=x=>typeof x==='string'?`<li>${x}</li>`:`<li>${tag(x[0])}${x[1]}</li>`;
+
+const REGIONS={
+ pfc:{n:'Córtex pré-frontal',w:'Parte da frente do lobo frontal',
+  d:'Atenção, planejamento, controle de impulsos e decisão. É a última região a amadurecer, e segue em desenvolvimento até cerca dos 25 anos, por isso o freio é mais fraco na infância e na adolescência.',
+  f:[['m','No estudo ABCD (7.614 jovens de 10 a 13 anos), mais tempo em redes sociais se associou a córtex mais fino em áreas frontais. O efeito foi pequeno e o estudo é transversal. Parte do afinamento é normal nessa idade, por causa da poda de sinapses.'],
+     ['m','Ra et al. (2018) acompanharam 2.587 adolescentes sem sintomas: 9,5% dos que usavam 7 atividades digitais com alta frequência tiveram sintomas de TDAH depois, contra 4,6% dos sem uso frequente. Os autores chamam a associação de modesta.'],
+     ['g','A SBP (2019, citada no documento do projeto) liga atenção e controle de impulsos a essa região, que amadurece ao longo da infância e da adolescência.']]},
+ white:{n:'Substância branca',w:'Fibras que ligam regiões do cérebro, aqui os tratos do lado esquerdo ligados à linguagem',
+  d:'É a “fiação” do cérebro. A mielina, camada que reveste as fibras, acelera a comunicação entre áreas e cresce muito nos primeiros anos de vida.',
+  f:[['m','Hutton et al. (2020) fizeram ressonância (DTI) em 47 crianças de 3 a 5 anos. Mais tela, medida pelo questionário ScreenQ, se associou a menor integridade da substância branca em três tratos do lado esquerdo ligados a linguagem, funções executivas e alfabetização.'],
+     ['m','Essas crianças também foram pior em linguagem expressiva, nomeação rápida de objetos e alfabetização inicial.'],
+     ['g','Limites: estudo transversal, amostra pequena de crianças saudáveis e uso relatado pelos pais. Não prova que a tela causou a diferença.']]},
+ temporal:{n:'Lobo temporal',w:'Lateral do cérebro, acima das orelhas',
+  d:'Audição, compreensão da linguagem, memória e reconhecimento de vozes e rostos. A linguagem se constrói ouvindo e conversando com pessoas.',
+  f:[['m','No ABCD, o córtex também foi mais fino nos lobos temporais de quem usava mais redes sociais (efeito pequeno, estudo transversal).'],
+     ['h','Hipótese de deslocamento: o tempo de tela toma o lugar de conversar e brincar. Os estudos citados não testaram esse mecanismo diretamente.'],
+     ['m','Madigan et al. (2019): em 2.441 crianças, mais tela aos 24 e 36 meses previu pior desempenho em teste de desenvolvimento depois, e o caminho inverso não apareceu. O efeito foi pequeno.']]},
+ parietal:{n:'Lobo parietal',w:'Parte de cima e de trás do cérebro',
+  d:'Atenção espacial, integração dos sentidos e noção do corpo no espaço, importante para brincar, se mexer e coordenar movimentos.',
+  f:[['m','No ABCD, córtex mais fino também apareceu em áreas parietais, que fazem parte de redes de atenção (efeito pequeno, estudo transversal).'],
+     ['g','Quem passa muito tempo parado diante da tela treina menos essa integração entre visão e movimento. É uma ideia geral de neurociência e não foi medida nos estudos citados.']]},
+ occipital:{n:'Lobo occipital',w:'Parte de trás do cérebro',
+  d:'Processa o que os olhos veem: cores, formas e movimento. Trabalha em conjunto com os olhos, que também sofrem com o excesso de tela.',
+  f:[['m','No ABCD, o córtex da região visual foi mais fino em quem usava mais redes sociais (efeito pequeno, estudo transversal).'],
+     ['m','Os olhos entram na conta: miopia, olho cansado e dor de cabeça aparecem entre os problemas físicos de cada fase.']]},
+ striatum:{n:'Estriado e núcleo accumbens',w:'Estrutura profunda, centro do circuito de recompensa',
+  d:'Responde à dopamina e gera o “quero mais” diante de curtidas, vídeos e notificações. Na adolescência, esse sistema é muito sensível.',
+  f:[['h','Lembke (2022): com a repetição, o cérebro cria tolerância e precisa de mais estímulo para sentir o mesmo. Ao parar, podem surgir irritabilidade, ansiedade, insônia e vontade de voltar.'],
+     ['h','Modelo comum na neurociência do desenvolvimento: na adolescência a recompensa amadurece antes do autocontrole, o que dá acelerador forte e freio fraco. É uma explicação, e não um resultado do banner.'],
+     ['m','Para jogos, a OMS reconhece o transtorno do jogo eletrônico (gaming disorder) na CID-11, segundo a SBP (2019).'],
+     ['m','O estudo ABCD não encontrou diferenças cerebrais significativas ligadas ao questionário de vício em redes sociais.']]},
+ amygdala:{n:'Amígdala',w:'Estrutura profunda, dentro do lobo temporal',
+  d:'Detecta ameaças e gera medo, ansiedade e reações emocionais rápidas.',
+  f:[['h','Comparação social, intimidação online e excesso de estímulo podem manter o jovem em estado de alerta. Essa ligação é plausível, mas ainda sem prova em jovens.'],
+     ['m','Comportamento medido: Riehm et al. (2019) seguiram 6.595 jovens que tinham de 12 a 15 anos no início do estudo. Quem usava redes por 3 horas ou mais por dia tinha o maior risco de ansiedade e depressão (problemas internalizantes), e o uso alto previu problemas um ano depois.'],
+     ['m','Os autores dizem que não dá para concluir que as redes causam esses problemas. Não houve associação significativa com problemas externalizantes isolados.']]},
+ hippocampus:{n:'Hipocampo',w:'Estrutura profunda, dentro do lobo temporal',
+  d:'Forma e guarda memórias, e é essencial para aprender. Durante o sono, as memórias do dia são consolidadas.',
+  f:[['g','Dormir pouco ou mal prejudica aprender e lembrar. Esse é o caminho provável de efeito das telas sobre a memória: indireto, pelo sono.'],
+     ['m','A SBP (2019) lista transtornos do sono entre os problemas associados ao uso precoce e excessivo. Na atualização de 2024, orienta que adolescentes nunca virem a noite.'],
+     ['h','Efeito direto das telas sobre o hipocampo: não há evidência sólida nos estudos citados.']]},
+ pineal:{n:'Relógio biológico',w:'Hipotálamo e glândula pineal, no centro do cérebro',
+  d:'Controlam o ritmo de sono e vigília. A glândula pineal produz melatonina quando escurece, e isso sinaliza ao corpo que é hora de dormir.',
+  f:[['g','Luz forte, principalmente azul, à noite reduz a melatonina e atrasa o sono. É fisiologia do sono bem conhecida.'],
+     ['g','Na adolescência o relógio biológico atrasa naturalmente, então o jovem tende a dormir mais tarde, e a tela à noite pesa ainda mais.'],
+     ['m','A SBP (2019) aponta transtornos do sono entre os problemas ligados ao uso excessivo de telas.']]}
+};
+const ORDER=['pfc','white','temporal','parietal','occipital','striatum','amygdala','hippocampus','pineal'];
+
+const PHASES={
+ p1:{ages:'0–5',tit:'Primeira infância',rule:'0–2 anos: nenhuma tela · 2–5 anos: até 1 h por dia',
+  sbp:'0 a 2 anos: nenhuma tela, nem passiva. 2 a 5 anos: até 1 hora por dia, com supervisão.',
+  hot:['white','temporal','pineal'],
+  brain:['É a fase de crescimento mais rápido do cérebro. Sinapses se formam em enorme quantidade e a mielina começa a revestir as fibras que ligam as áreas.','A linguagem nasce de conversa, voz, gestos e brincadeira com pessoas. Por isso, o que a tela substitui importa tanto quanto o que ela mostra.'],
+  good:['A videochamada com a família é a exceção aceita pela AAP (2016) para menores de 18 meses.','A partir dos 2 anos, conteúdo de boa qualidade visto junto com um adulto que conversa sobre ele é o uso mais seguro (orientação da AAP, 2016).','Tecnologia assistiva pode ajudar crianças com deficiência ou diferenças do neurodesenvolvimento. A SBP (2024) reconhece esse direito.'],
+  risk:[['m','Mais tela aos 24 e 36 meses previu pior desenvolvimento aos 36 e 60 meses em 2.441 crianças (Madigan, 2019). O contrário não ocorreu, e o efeito foi pequeno.'],
+        ['m','Menor integridade da substância branca em áreas de linguagem em 47 crianças de 3 a 5 anos (Hutton, 2020). Estudo transversal.'],
+        ['m','Cada hora diária de TV aos 1 e 3 anos se associou a mais problemas de atenção aos 7 anos (Christakis, 2004). A reanálise de McBee et al. (2021) questiona esse resultado.'],
+        ['h','Menos conversa e brincadeira, porque a tela ocupa o tempo.']],
+  mental:['Irritabilidade e dependência digital aparecem entre os problemas associados ao uso precoce e excessivo (SBP, 2019).','Dificuldade de se acalmar e de esperar sem a tela é uma preocupação de pais e pediatras, mas a SBP trata como risco e não como diagnóstico.'],
+  phys:['Sedentarismo e obesidade (SBP, 2019).','Transtornos do sono, com dormir mais tarde e pior (SBP, 2019).','Visão: o risco de miopia começa cedo, e a SBP (2023) aponta a tela como fator de risco.'],
+  home:['Antes dos 2 anos, evite telas. Desligue a TV de fundo e deixe o celular de lado durante as brincadeiras.','De 2 a 5 anos, a referência é de até 1 hora por dia, com um adulto junto. Ao assistir junto, converse sobre o que aparece e ligue a atividade a algo do cotidiano.','Uma videochamada com a família abre espaço para conversar e mostrar um desenho.'],
+  st:['Madigan 2019 · 2.441 crianças','Hutton 2020 · 47 crianças','Christakis 2004','McBee 2021 (reanálise)','AAP 2016']},
+ p2:{ages:'6–11',tit:'Fase escolar',rule:'6–10 anos: 1 a 2 h por dia, supervisionadas',
+  sbp:'6 a 10 anos: 1 a 2 horas por dia, sempre supervisionadas. A SBP (2024) agrupa 6–10 e 11–18; o banner usa 6–11.',
+  hot:['pfc','parietal','occipital','hippocampus','pineal'],
+  brain:['O cérebro refina o que já tem. Sinapses pouco usadas são podadas e as redes de atenção ficam mais eficientes.','O córtex pré-frontal ainda é imaturo, então manter o foco e resistir ao estímulo fácil exige esforço. O sono é o momento em que as memórias do dia são consolidadas.'],
+  good:['Aprendizagem: aplicativos, vídeos e pesquisa para a escola, quando há objetivo e supervisão.','Criatividade e comunicação: desenhar, programar, criar vídeos e falar com família e amigos.','Letramento digital: a SBP (2024) dá mais ênfase ao ensino de uso seguro e ético na escola.'],
+  risk:[['h','Dificuldade de manter a atenção em tarefas sem recompensa imediata, porque o estímulo rápido treina o cérebro a esperar menos.'],
+        ['m','No ABCD, córtex mais fino em áreas frontais, parietais, temporais e occipitais com mais redes sociais, em jovens de 10 a 13 anos (efeito pequeno, transversal).'],
+        ['g','Sono: tela à noite atrasa o sono, e dormir pouco piora atenção e memória no dia seguinte.'],
+        ['m','Atenção e sono aparecem entre os problemas associados ao uso excessivo no documento do projeto (SBP, 2019). O próprio projeto reconhece que esta fase tem menos estudos.']],
+  mental:['Ansiedade, irritabilidade e dependência de jogos eletrônicos. A OMS reconhece o transtorno do jogo eletrônico na CID-11 (SBP, 2019).','Riscos online de conteúdo agressivo, sexual ou contrário a valores, classificados pelo modelo CO:RE adotado pela SBP (2024).','Sintomas de TDAH: a associação com mídia digital é modesta e o TDAH tem várias causas.'],
+  phys:['Miopia: em meta-análise de 2024 (19 estudos, 102.360 participantes), o maior tempo de tela teve cerca de 2 vezes mais chance de miopia. Por hora extra, a associação foi pequena (OR 1,07 em estudos de coorte).','Luz do sol protege: 11 a 14 horas por semana ao ar livre reduzem o risco de miopia (SBP, 2023).','Dor de cabeça, no pescoço, nos ombros e nas costas (SBP, 2023).','Obesidade e sedentarismo (SBP, 2019).'],
+  home:['Observe se jogos e vídeos estão ocupando o tempo de sono, de atividade física ou de convivência.','A recomendação da SBP é de 1 a 2 horas por dia, com supervisão.','Combine antes um objetivo para a tela, como estudar, criar ou falar com alguém, e um ponto de parada.'],
+  st:['Ra 2018 · 2.587 adolescentes','Nikkelen 2014 (meta-análise)','SBP 2019 e 2024','SBP 2023 · visão','Meta-análise de miopia 2024']},
+ p3:{ages:'12–18',tit:'Adolescência',rule:'11–18 anos: 2 a 3 h por dia, nunca virar a noite',
+  sbp:'11 a 18 anos: 2 a 3 horas por dia, e o jovem nunca deve virar a noite (SBP, 2024).',
+  hot:['striatum','amygdala','pfc','pineal','hippocampus'],
+  brain:['O sistema de recompensa fica muito sensível, e o pré-frontal ainda não amadureceu: o acelerador é forte e o freio é fraco.','Cresce a importância dos amigos e da aprovação social, que é exatamente o que as redes exploram com curtidas e seguidores. O relógio biológico também atrasa, e o jovem tende a dormir mais tarde.'],
+  good:['Conexão social: as redes podem aproximar jovens que se sentem excluídos (Riehm et al., 2019).','Em meta-análise, o uso de redes teve pequenos benefícios para o bem-estar e ficou mais ligado a melhores relações do que a pior saúde mental (Hancock, citado pela Scientific American).','Sentir-se no controle do uso previu melhor bem-estar do que o tempo gasto (Lee, citado pela Scientific American).','Aprendizagem, criatividade e construção de identidade.'],
+  risk:[['m','Com 3 horas ou mais por dia em redes, o risco de ansiedade e depressão foi maior, e o uso alto previu problemas um ano depois, em 6.595 jovens que tinham de 12 a 15 anos no início (Riehm, 2019).'],
+        ['m','Sintomas de TDAH em 9,5% dos adolescentes com uso muito frequente de 7 atividades, contra 4,6% sem uso frequente (Ra, 2018).'],
+        ['m','Córtex mais fino com mais redes sociais no ABCD, com efeito pequeno. “Mais fino” não é necessariamente pior, porque parte do afinamento é normal.'],
+        ['h','Haidt (2024) associa a troca da infância baseada no brincar pela infância baseada no celular ao aumento de transtornos mentais. Críticos dizem que as provas de causa são fracas.']],
+  mental:['Ansiedade e depressão, chamadas de problemas internalizantes (Riehm, 2019).','Uso problemático, a dificuldade de controlar o tempo mesmo com prejuízo na rotina, e transtorno do jogo eletrônico (SBP, 2019).','Sintomas de TDAH e irritabilidade.','Sono ruim, que piora o humor e a atenção.'],
+  phys:['Sono encurtado e atrasado (SBP, 2019).','Sedentarismo e obesidade (SBP, 2019).','Dor no pescoço, nos ombros e nas costas por postura (SBP, 2023).','Miopia e cansaço visual (SBP, 2023).'],
+  home:['Conversem sobre notificações, privacidade e horário de dormir.','Combinem momentos da rotina em que todos guardam o celular, como nas refeições.','Combinem o que fazer se algo incomodar: bloquear, denunciar e procurar um adulto de confiança.'],
+  st:['Riehm 2019 · 6.595 jovens','Ra 2018 · 2.587 jovens','ABCD · 7.614 jovens','Haidt 2024','Orben e Przybylski · debate']}
+};
+
+let phase='p1',region='pfc';
+const $=s=>document.querySelector(s);
+
+function renderTimeline(){
+  $('#tl').innerHTML=Object.entries(PHASES).map(([k,p])=>
+   `<button role="tab" id="tab-${k}" data-p="${k}" aria-selected="${k===phase}"><span class="ages">${p.ages}<small>anos</small></span><span class="pname">${p.tit}</span><span class="rule">${p.rule}</span></button>`).join('');
+}
+function renderChips(){
+  const hot=PHASES[phase].hot;
+  $('#chips').innerHTML=ORDER.map(r=>`<button data-r="${r}" class="${hot.includes(r)?'hot':''}" aria-pressed="${r===region}">${REGIONS[r].n}</button>`).join('');
+}
+function renderMap(){
+  const hot=PHASES[phase].hot;
+  document.querySelectorAll('svg [data-r]').forEach(el=>{
+    el.classList.toggle('hot',hot.includes(el.dataset.r));
+    el.classList.toggle('sel',el.dataset.r===region);
+  });
+}
+function renderRegion(){
+  const r=REGIONS[region],hot=PHASES[phase].hot.includes(region);
+  $('#rpanel').innerHTML=`<h3>${r.n}</h3><p class="where">${r.w}</p>`+
+   (hot?`<p class="rel">EM FOCO NA FASE ${PHASES[phase].ages} ANOS</p>`:'')+
+   `<p class="does">${r.d}</p><ul class="facts">${r.f.map(li).join('')}</ul>`;
+}
+function renderPhase(){
+  const p=PHASES[phase];
+  $('#phase').innerHTML=`
+   <div class="phead"><span class="eyebrow">${p.ages} anos</span><h2 style="font-size:1.9rem">${p.tit}</h2>
+     <div class="sbp"><b>SBP</b><span>${p.sbp}</span></div></div>
+   <div class="blk"><h2 style="--c:var(--accent)">O que o cérebro está fazendo</h2><div class="brainp">${p.brain.map(t=>`<p>${t}</p>`).join('')}</div><p><span class="tag t-g">Geral</span><span style="font-size:.85rem;color:var(--muted)">neurociência básica do desenvolvimento</span></p></div>
+   <div class="split">
+     <div class="blk good"><h2>Benefícios</h2><ul>${p.good.map(li).join('')}</ul></div>
+     <div class="blk risk"><h2>Riscos para cérebro e aprendizado</h2><ul>${p.risk.map(li).join('')}</ul></div>
+   </div>
+   <div class="split">
+     <div class="blk risk"><h2>Saúde mental</h2><ul>${p.mental.map(li).join('')}</ul></div>
+     <div class="blk risk"><h2>Doenças e problemas físicos</h2><ul>${p.phys.map(li).join('')}</ul></div>
+   </div>
+   <div class="blk good"><h2>Em casa, na prática</h2><ul>${p.home.map(li).join('')}</ul></div>
+   <div class="blk"><h2 style="--c:var(--ink)">Estudos desta fase</h2><div class="studies">${p.st.map(s=>`<span>${s}</span>`).join('')}</div></div>`;
+}
+function renderAll(){renderTimeline();renderPhase();renderChips();renderMap();renderRegion()}
+function setRegion(r){region=r;renderChips();renderMap();renderRegion()}
+
+/* navegação por hash */
+const PAGES=['inicio','linha-do-tempo','efeitos','tdah','uso-consciente','fontes'];
+const pages=[...document.querySelectorAll('[data-page]')];
+function route(initial){
+  const id=location.hash.slice(1);
+  let pageId='inicio',target=null;
+  if(PHASES[id]){phase=id;pageId='linha-do-tempo';renderAll()}
+  else if(PAGES.includes(id)){pageId=id}
+  else if(id){target=document.getElementById(id);const pg=target&&target.closest('[data-page]');if(pg)pageId=pg.id}
+  pages.forEach(p=>{p.hidden=p.id!==pageId});
+  document.querySelectorAll('[data-nav]').forEach(a=>{
+    if(a.dataset.nav===pageId)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+  });
+  if(target&&!target.hidden){target.scrollIntoView({block:'center'})}
+  else{window.scrollTo(0,0);if(initial)setTimeout(()=>window.scrollTo(0,0),60)}
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-p]');if(t){location.hash=t.dataset.p;return}
+  const r=e.target.closest('[data-r]');if(r)setRegion(r.dataset.r);
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ')return;
+  const r=e.target.closest&&e.target.closest('svg [data-r]');
+  if(r){e.preventDefault();setRegion(r.dataset.r)}
+});
+window.addEventListener('hashchange',()=>route(false));
+
+/* tema */
+const root=document.documentElement,tb=$('#theme');
+function effTheme(){return root.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}
+function themeLabel(){tb.textContent=effTheme()==='dark'?'☀ Modo claro':'☾ Modo escuro'}
+try{const s=localStorage.getItem('tema-telas');if(s==='dark'||s==='light')root.dataset.theme=s}catch(e){}
+tb.addEventListener('click',()=>{root.dataset.theme=effTheme()==='dark'?'light':'dark';themeLabel();try{localStorage.setItem('tema-telas',root.dataset.theme)}catch(e){}});
+themeLabel();
+
+renderAll();
+route(true);
+</script>
+
+</body></html>
